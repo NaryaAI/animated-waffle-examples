@@ -84,8 +84,8 @@ function EmptyState({
   return (
     <div className="pt-6">
       <p className="text-sm text-muted">
-        Speak or type. Ruby answers out loud, and her replies are annotated with
-        the performance cues driving her face.
+        Speak or type. Ruby answers out loud, and the badge over her shoulder
+        names the cue her face is performing as she plays it.
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
         {OPENERS.map((opener) => (

@@ -78,6 +78,7 @@ export function LiveChat({ config }: { config: WaffleConfig }) {
             load={waffle.avatarLoad}
             status={waffle.status}
             speaking={waffle.agentSpeaking}
+            performance={waffle.performance}
           >
             <TalkControl connected={connected} inputMode={inputMode} hold={hold} />
           </AvatarStage>

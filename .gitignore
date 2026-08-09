@@ -12,3 +12,6 @@ dist
 *.log
 .idea
 .vscode
+
+# Dev-only SDK tarballs packed from the local animated-waffle checkout.
+.sdk-local

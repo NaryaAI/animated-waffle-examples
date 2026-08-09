@@ -11,8 +11,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@animated-waffle/avatar": "^0.1.4",
-    "@animated-waffle/react": "^0.1.8",
+    "@animated-waffle/avatar": "^0.2.2",
+    "@animated-waffle/react": "^0.2.2",
     "@pixiv/three-vrm": "3.5.5",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

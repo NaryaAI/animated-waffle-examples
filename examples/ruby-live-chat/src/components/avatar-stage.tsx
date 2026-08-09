@@ -1,5 +1,10 @@
 import type { ReactNode } from 'react'
-import type { WaffleAvatarLoadState, WaffleStatus } from '@animated-waffle/react'
+import { emotionFamilyFor } from '@animated-waffle/avatar'
+import type {
+  AvatarPerformanceState,
+  WaffleAvatarLoadState,
+  WaffleStatus,
+} from '@animated-waffle/react'
 
 interface AvatarStageProps {
   /** Mount point the SDK renders Ruby into. */
@@ -7,6 +12,8 @@ interface AvatarStageProps {
   load: WaffleAvatarLoadState
   status: WaffleStatus
   speaking: boolean
+  /** The cue Ruby is performing right now, straight from the renderer. */
+  performance: AvatarPerformanceState
   /** Talk controls, laid over the bottom of the stage. */
   children?: ReactNode
 }
@@ -16,6 +23,7 @@ export function AvatarStage({
   load,
   status,
   speaking,
+  performance,
   children,
 }: AvatarStageProps) {
   const notice = stageNotice(status, load)
@@ -32,11 +40,75 @@ export function AvatarStage({
         </div>
       ) : null}
 
+      <PerformanceBadge performance={performance} />
+
       {notice ? <StageNotice {...notice} /> : null}
 
       <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-3 px-6 pb-8">
         {children}
       </div>
+    </div>
+  )
+}
+
+/**
+ * One colour per emotion family from the SDK's performance-tag contract. An
+ * unknown family falls back to the neutral tint, so a contract that grows a
+ * family does not break the badge.
+ */
+const NEUTRAL_COLOR = '#9aa3b8'
+
+const FAMILY_COLOR: Record<string, string> = {
+  neutral: NEUTRAL_COLOR,
+  joy: '#ffb545',
+  anticipation: '#4ad6c4',
+  confidence: '#7aa2ff',
+  sadness: '#6f8cd8',
+  self_conscious: '#c58ad6',
+  anger: '#ff6b5e',
+  aversion: '#b07be0',
+  disengagement: '#95907f',
+  fear: '#a78bfa',
+  orienting: '#5eead4',
+  care: '#7dd3a0',
+  playful: '#ff8fb1',
+}
+
+/**
+ * What Ruby's face is doing, named while she does it.
+ *
+ * The source is the renderer itself — `useWaffle().performance` reports a cue
+ * at the moment it reaches the avatar — rather than tags parsed out of her
+ * caption. The badge therefore never claims a performance the stage did not
+ * actually play, and it clears when her turn ends and the face returns to rest.
+ */
+function PerformanceBadge({ performance }: { performance: AvatarPerformanceState }) {
+  const { emotion, vocalAction } = performance
+  if (!emotion && !vocalAction) return null
+
+  const color = emotion
+    ? FAMILY_COLOR[emotionFamilyFor(emotion) ?? 'neutral'] ?? NEUTRAL_COLOR
+    : NEUTRAL_COLOR
+
+  return (
+    <div className="pointer-events-none absolute top-5 right-5 flex flex-wrap items-center justify-end gap-1.5">
+      {emotion ? (
+        <span
+          className="animate-rise rounded-full border px-2.5 py-1 text-xs font-medium backdrop-blur-sm"
+          style={{
+            color,
+            borderColor: `color-mix(in oklab, ${color} 40%, transparent)`,
+            backgroundColor: `color-mix(in oklab, ${color} 14%, transparent)`,
+          }}
+        >
+          {emotion}
+        </span>
+      ) : null}
+      {vocalAction ? (
+        <span className="animate-rise rounded-full border border-line bg-stage/70 px-2.5 py-1 text-xs text-muted backdrop-blur-sm">
+          {vocalAction}
+        </span>
+      ) : null}
     </div>
   )
 }
