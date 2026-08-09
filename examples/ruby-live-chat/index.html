@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ruby · Live</title>
+    <script>
+      // Resolved before first paint so the page never flashes the other theme.
+      // The stored choice wins; otherwise follow the system.
+      (() => {
+        let stored = null
+        try {
+          stored = localStorage.getItem('ruby-live-chat:theme')
+        } catch {}
+        const dark = window.matchMedia('(prefers-color-scheme: dark)').matches
+        document.documentElement.dataset.theme =
+          stored === 'light' || stored === 'dark' ? stored : dark ? 'dark' : 'light'
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

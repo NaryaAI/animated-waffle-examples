@@ -1,0 +1,13 @@
+{
+  "name": "animated-waffle-examples",
+  "private": true,
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "dev": "pnpm --filter ruby-live-chat dev",
+    "dev:dev": "pnpm --filter ruby-live-chat dev:dev",
+    "dev:ruby-live-chat": "pnpm --filter ruby-live-chat dev",
+    "build": "pnpm -r --if-present build",
+    "test": "pnpm -r --if-present test",
+    "typecheck": "pnpm -r --if-present typecheck"
+  }
+}

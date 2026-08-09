@@ -1,0 +1,114 @@
+@import 'tailwindcss';
+
+/*
+ * A small semantic palette, so components read as `bg-surface` / `text-muted`
+ * rather than a pile of one-off zinc shades. The dark values live here because
+ * `@theme` is what generates the utilities; the light theme overrides the same
+ * variables below, so no component needs a `dark:` variant.
+ */
+@theme {
+  --color-stage: #09080d;
+  --color-surface: #100e16;
+  --color-raised: #1a1722;
+  --color-line: #272231;
+  --color-ink: #f3f0f7;
+  --color-muted: #9a94a9;
+  --color-ruby: #e2365a;
+  --color-ruby-soft: #ff8098;
+
+  /* Backdrop behind the avatar, lit from above. */
+  --color-spotlight: #231b33;
+
+  --animate-bar: waffle-bar 900ms ease-in-out infinite;
+  --animate-rise: waffle-rise 240ms ease-out both;
+  --animate-halo: waffle-halo 2.4s ease-in-out infinite;
+}
+
+@keyframes waffle-bar {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes waffle-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes waffle-halo {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@layer base {
+  /* `data-theme` is stamped by the inline script in index.html before paint, so
+     one selector covers both the stored choice and the system preference. */
+  :root {
+    color-scheme: dark;
+    --cue-adjust: none;
+  }
+
+  :root[data-theme='light'] {
+    color-scheme: light;
+    --color-stage: #f6f5f8;
+    --color-surface: #ffffff;
+    --color-raised: #f1eff4;
+    --color-line: #e2dfe8;
+    --color-ink: #17151c;
+    --color-muted: #6b6579;
+    /* Deeper than the dark theme's ruby: it carries white button text here, and
+       is used as tinted text on white. */
+    --color-ruby: #c81e46;
+    --color-ruby-soft: #a81639;
+    --color-spotlight: #e7e2f0;
+    /* The cue-chip colours are picked for a dark backdrop; deepen them so the
+       small text stays legible on white. */
+    --cue-adjust: saturate(1.15) brightness(0.72);
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    background-color: var(--color-stage);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line) transparent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@utility cue-chip {
+  filter: var(--cue-adjust);
+}
