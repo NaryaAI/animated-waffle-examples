@@ -8,12 +8,11 @@
     "dev:dev": "vite --mode dev",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@animated-waffle/avatar": "^0.2.0",
-    "@animated-waffle/react": "^0.2.0",
+    "@animated-waffle/avatar": "^0.1.4",
+    "@animated-waffle/react": "^0.1.8",
     "@pixiv/three-vrm": "3.5.5",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -27,7 +26,6 @@
     "@vitejs/plugin-react": "^6.0.5",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
-    "vite": "^8.2.1",
-    "vitest": "^3.2.4"
+    "vite": "^8.2.1"
   }
 }

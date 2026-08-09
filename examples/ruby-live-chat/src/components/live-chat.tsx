@@ -27,10 +27,7 @@ export function LiveChat({ config }: { config: WaffleConfig }) {
   })
 
   const connected = waffle.status === 'connected'
-  const turns = useMemo(
-    () => buildChatHistory(waffle.transcript, waffle.speechSegments),
-    [waffle.speechSegments, waffle.transcript],
-  )
+  const turns = useMemo(() => buildChatHistory(waffle.transcript), [waffle.transcript])
   const { visible: error, dismiss } = useDismissibleError(failure ?? waffle.error)
 
   const report = useCallback((error: unknown) => {

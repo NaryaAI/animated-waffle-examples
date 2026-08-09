@@ -1,5 +1,5 @@
 import { emotionFamilyFor, segmentTranscript, stripTags } from '@animated-waffle/avatar'
-import type { WaffleSpeechSegment, WaffleTranscript } from '@animated-waffle/react'
+import type { WaffleTranscript } from '@animated-waffle/react'
 
 export interface PerformanceCue {
   tag: string
@@ -20,12 +20,11 @@ export interface ChatTurn {
 }
 
 /**
- * Fold durable transcript rows and live speech segments into chat bubbles.
+ * Fold the SDK's transcript log into chat bubbles.
  *
- * A transcript row is one persisted conversation turn. Ruby's visible bubbles
- * instead come from the sentence-sized speech segments that arrive immediately
- * before their audio. Keeping those streams separate means persistence can use
- * one stable message id without collapsing the live chat into one giant bubble.
+ * One bubble per entry. Ruby's replies arrive one entry per spoken sentence, as
+ * she starts saying it, so bubbles appear alongside her voice and nothing here
+ * has to group or de-duplicate anything.
  *
  * The only state here is speech recognition revising its guess: a non-final
  * entry is a slot that the next revision overwrites and that speaker's next
@@ -33,45 +32,14 @@ export interface ChatTurn {
  */
 export function buildChatHistory(
   transcript: readonly WaffleTranscript[],
-  speechSegments: readonly WaffleSpeechSegment[],
 ): ChatTurn[] {
   const turns: ChatTurn[] = []
   const liveAt = new Map<WaffleTranscript['role'], number>()
-  const latestSegmentById = new Map<string, WaffleSpeechSegment>()
-  const segmentsByMessage = new Map<string, WaffleSpeechSegment[]>()
-  const renderedSegments = new Set<string>()
-
-  for (const segment of speechSegments) {
-    latestSegmentById.set(segment.id, segment)
-  }
-
-  for (const segment of latestSegmentById.values()) {
-    const messageSegments = segmentsByMessage.get(segment.messageId) ?? []
-    messageSegments.push(segment)
-    segmentsByMessage.set(segment.messageId, messageSegments)
-  }
-
-  const appendSegments = (segments: readonly WaffleSpeechSegment[]) => {
-    for (const segment of [...segments].sort((a, b) => a.sequence - b.sequence)) {
-      if (renderedSegments.has(segment.id)) continue
-      renderedSegments.add(segment.id)
-      turns.push(presentSpeechSegment(segment))
-    }
-  }
 
   for (const [index, entry] of transcript.entries()) {
-    if (entry.role === 'assistant') {
-      const segments = segmentsByMessage.get(entry.id)
-      if (segments?.length) appendSegments(segments)
-      // Assistant transcript rows are persistence, not proof that their audio
-      // reached playout. This applies to interim rows too: Ruby's visible chat
-      // is built exclusively from the speech segments released by the SDK.
-      continue
-    }
-
     if (!entry.final) {
       const at = liveAt.get(entry.role)
-      const bubble = presentTranscript(`live-${entry.role}`, entry, true)
+      const bubble = present(`live-${entry.role}`, entry, true)
       if (at === undefined) {
         liveAt.set(entry.role, turns.length)
         turns.push(bubble)
@@ -90,43 +58,24 @@ export function buildChatHistory(
         if (position > at) liveAt.set(role, position - 1)
       }
     }
-    turns.push(presentTranscript(`turn-${index}`, entry, false))
+    turns.push(present(`turn-${index}`, entry, false))
   }
-
-  // During speech, segments precede the final durable assistant row. Show
-  // those unanchored segments now; the stable segment id prevents duplication
-  // when the transcript row arrives after playback.
-  appendSegments([...latestSegmentById.values()])
 
   // An entry that was only a tag — `[sighing]` on its own — has no caption and
   // no segment to read a cue from. Drop it instead of drawing an empty bubble.
   return turns.filter((turn) => turn.text !== '' || turn.cues.length > 0)
 }
 
-function presentTranscript(id: string, entry: WaffleTranscript, live: boolean): ChatTurn {
-  return { id, role: entry.role, text: entry.text, cues: [], live }
-}
+function present(id: string, entry: WaffleTranscript, live: boolean): ChatTurn {
+  if (entry.role === 'user') {
+    return { id, role: entry.role, text: entry.text, cues: [], live }
+  }
 
-function presentSpeechSegment(segment: WaffleSpeechSegment): ChatTurn {
-  return presentAssistant(
-    `speech-${segment.id}`,
-    segment.annotatedText,
-    false,
-    segment.text,
-  )
-}
-
-function presentAssistant(
-  id: string,
-  annotatedText: string,
-  live: boolean,
-  displayText?: string,
-): ChatTurn {
   // Ruby's text carries the bracketed performance tags that drive her face.
   // `segmentTranscript` from `@animated-waffle/avatar` reads them the same way
   // the runtime does, so the chips name the cues the stage is performing and the
   // caption is left clean.
-  const segments = segmentTranscript(annotatedText)
+  const segments = segmentTranscript(entry.text)
   const cues: PerformanceCue[] = []
   let carried: string | null = null
 
@@ -153,8 +102,8 @@ function presentAssistant(
 
   return {
     id,
-    role: 'assistant',
-    text: displayText?.trim() || caption || stripTags(annotatedText),
+    role: entry.role,
+    text: caption || stripTags(entry.text),
     cues,
     live,
   }

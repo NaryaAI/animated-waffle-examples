@@ -49,8 +49,7 @@ useWaffle({ agentId,
                                                             /session-tokens
    ◀────────────── short-lived, Agent-scoped token ──────────────┘
    └── connect() ────────────────────────────────────────▶ Agent session
-                              ◀─── audio · transcript · annotated speech facts
-       client choreography ◀──── segment identity · playout progress · timing
+                              ◀─── audio · transcripts · performance cues
 ```
 
 `src/lib/session-token.ts` is the browser half: one `fetch`, no caching. The SDK
@@ -71,8 +70,8 @@ The workspace key is kept out of the bundle by naming, not by discipline: Vite's
 ## What the SDK owns, and what this app owns
 
 `useWaffle` returns the whole session — `status`, `session`, `transcript`,
-`speechSegments`, `speechProgress`, `agentSpeaking`, `error`, `connect`, `disconnect`, `sendText`,
-the push-to-talk controls, plus `avatarRef` and `avatarLoad`. This app adds only layout,
+`agentSpeaking`, `error`, `connect`, `disconnect`, `sendText`, the push-to-talk
+controls, plus `avatarRef` and `avatarLoad`. This app adds only layout,
 gestures, and presentation:
 
 | File | Responsibility |
@@ -97,34 +96,24 @@ Two details worth copying:
   non-UUID id in its constructor, and `useWaffle` constructs it during render. A
   missing `.env` should render setup instructions, not throw out of a render.
 
-## Performance cues in live speech
+## Performance cues in the transcript
 
-Ruby's live speech segments carry bracketed tags — `[happy]`, `[laughing]` —
-that the browser SDK turns into her local performance. The service never
-chooses an expression or schedules a cue; it supplies annotated text, segment
-identity, and factual playout progress. The separate durable transcript stays clean and keeps one
-stable id for the complete assistant turn. `lib/chat-history.ts` uses
-`@animated-waffle/avatar` to read each segment the same way the SDK does:
+Ruby's replies carry bracketed tags — `[happy]`, `[laughing]` — that drive her
+face. `lib/chat-history.ts` uses `@animated-waffle/avatar` to read them the same
+way the runtime does:
 
 ```ts
 import { emotionFamilyFor, segmentTranscript, stripTags } from '@animated-waffle/avatar'
 ```
 
-`segmentTranscript` splits a segment at each tag; emotion is durable state
+`segmentTranscript` splits an utterance at each tag; emotion is durable state
 that persists until it changes, while a vocal action belongs to one segment
 only. The caption uses each segment's tag-free `display` text, and the chips
 under a bubble name the cues in the order Ruby reached them — coloured by
 emotion family, so the chat annotates the performance on the left instead of
 leaking markup into it.
 
-An Agent that emits no tags simply produces no chips. One live speech segment
-maps to one Ruby bubble, so the final persisted turn never collapses the reply
-back into a duplicate giant bubble. The SDK does not release a segment to this
-UI until its matching output reaches the media queue, so later bubbles and
-sentence-leading expressions do not arrive ahead of the audio currently playing.
-The earlier full-turn durable row is intentionally not used as a live fallback:
-otherwise it would flash the whole reply during provider TTFB before the first
-sentence starts. Session errors cover the no-audio case instead.
+An Agent that emits no tags simply produces no chips.
 
 ## Not covered here
 
