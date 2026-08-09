@@ -11,11 +11,11 @@ importers:
   examples/ruby-live-chat:
     dependencies:
       '@animated-waffle/avatar':
-        specifier: ^0.1.4
-        version: 0.1.4(@pixiv/three-vrm@3.5.5(three@0.185.1))(three@0.185.1)
+        specifier: ^0.2.2
+        version: 0.2.2(@pixiv/three-vrm@3.5.5(three@0.185.1))(three@0.185.1)
       '@animated-waffle/react':
-        specifier: ^0.1.8
-        version: 0.1.8(react@19.2.8)
+        specifier: ^0.2.2
+        version: 0.2.2(react@19.2.8)
       '@pixiv/three-vrm':
         specifier: 3.5.5
         version: 3.5.5(three@0.185.1)
@@ -56,17 +56,17 @@ importers:
 
 packages:
 
-  '@animated-waffle/avatar@0.1.4':
-    resolution: {integrity: sha512-52iM1FS3bBMcugh/6aym8ad4BAHcfCrsVisvBwAXnuextqnapFmLpj5W9NBZy+0Vx//Ys3SKpT9BXT5RwW4bqg==}
+  '@animated-waffle/avatar@0.2.2':
+    resolution: {integrity: sha512-Zq8QBTcopKSHsjkrwVw0vurLtcBgB3aZ+2eZl70kt6saXoegInQakL3CwdqfJP0dMipViYay1PBuqTe6Vma0Mw==}
     peerDependencies:
       '@pixiv/three-vrm': ^3.5.5
       three: '>=0.185.0'
 
-  '@animated-waffle/client@0.1.6':
-    resolution: {integrity: sha512-/cD7I1Jl7jOGq6CyEwRUdyQ6jojuMuVjkXFKPI4EU+w0cf/yOTaSgfzbd11Qb9gRUw/9coarUTU0pUHrsUhz8Q==}
+  '@animated-waffle/client@0.2.2':
+    resolution: {integrity: sha512-Fxvjg6ofwQt7trQZEr4VactuBpuNGbqYyiqsVdpFDXi74BZ7jzbiDdLOEsiDsInRBx/RHysYRYytKYrop5H70Q==}
 
-  '@animated-waffle/react@0.1.8':
-    resolution: {integrity: sha512-7OYrU15I8w2I4Uc4lwyZ8wTr3Pfda+1bq+lWTniIDaSN+lJ71RcMVKH6Mg+rlUk1a5NeuDJT/1amQvmQ4Wx0OA==}
+  '@animated-waffle/react@0.2.2':
+    resolution: {integrity: sha512-q322QyIDYKVZZ+AAlJIxuFMge1Ad2TistesX+cjMD6HFbKgbLPnd1FaEkYdFKFvVpEghkfJoKvsGPfUJlJxD+Q==}
     peerDependencies:
       react: '>=18'
 
@@ -894,21 +894,21 @@ packages:
 
 snapshots:
 
-  '@animated-waffle/avatar@0.1.4(@pixiv/three-vrm@3.5.5(three@0.185.1))(three@0.185.1)':
+  '@animated-waffle/avatar@0.2.2(@pixiv/three-vrm@3.5.5(three@0.185.1))(three@0.185.1)':
     dependencies:
       '@met4citizen/headaudio': 0.1.0
       '@pixiv/three-vrm': 3.5.5(three@0.185.1)
       three: 0.185.1
 
-  '@animated-waffle/client@0.1.6':
+  '@animated-waffle/client@0.2.2':
     dependencies:
       '@pipecat-ai/client-js': 1.12.0
       '@pipecat-ai/daily-transport': 1.6.7(@pipecat-ai/client-js@1.12.0)
 
-  '@animated-waffle/react@0.1.8(react@19.2.8)':
+  '@animated-waffle/react@0.2.2(react@19.2.8)':
     dependencies:
-      '@animated-waffle/avatar': 0.1.4(@pixiv/three-vrm@3.5.5(three@0.185.1))(three@0.185.1)
-      '@animated-waffle/client': 0.1.6
+      '@animated-waffle/avatar': 0.2.2(@pixiv/three-vrm@3.5.5(three@0.185.1))(three@0.185.1)
+      '@animated-waffle/client': 0.2.2
       '@pixiv/three-vrm': 3.5.5(three@0.185.1)
       react: 19.2.8
       three: 0.185.1
